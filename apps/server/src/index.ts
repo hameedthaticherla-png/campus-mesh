@@ -43,7 +43,8 @@ export async function buildApp() {
   });
 
   // 3. Register REST API Routes
-  await server.register(healthRoutes, { prefix: '/api' });
+  await server.register(healthRoutes); // /health (root level for platform health probes)
+  await server.register(healthRoutes, { prefix: '/api' }); // /api/health
   await server.register(sessionRoutes, { prefix: '/api' });
   await server.register(resourceRoutes, { prefix: '/api' });
   await server.register(telemetryRoutes, { prefix: '/api' });
