@@ -1,0 +1,28 @@
+{
+  "name": "campus-mesh",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Class-Scoped, Browser-First Peer-to-Peer Academic Resource Distribution System",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "test:lan": "node scripts/test-lan-flow.mjs",
+    "generate-dummy-file": "node scripts/generate-dummy-file.js"
+  },
+  "keywords": [
+    "p2p",
+    "webrtc",
+    "classroom",
+    "datachannel",
+    "mesh",
+    "bandwidth-savings"
+  ],
+  "author": "Campus Mesh Team",
+  "license": "MIT"
+}

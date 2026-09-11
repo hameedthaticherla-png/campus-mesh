@@ -1,0 +1,30 @@
+{
+    # Enable internal automatic CA for local HTTPS across LAN devices
+    local_certs
+}
+
+:80 {
+    # Auto-redirect HTTP to HTTPS
+    redir https://{host}{uri} permanent
+}
+
+:443 {
+    tls internal
+
+    # Frontend Single Page App static serving
+    root * /usr/share/caddy
+    file_server
+
+    # Reverse proxy API requests to Fastify backend
+    handle /api/* {
+        reverse_proxy server:3001
+    }
+
+    # Reverse proxy WebSocket signaling to Fastify backend
+    handle /ws/* {
+        reverse_proxy server:3001
+    }
+
+    # SPA client-side routing fallback to index.html
+    try_files {path} /index.html
+}

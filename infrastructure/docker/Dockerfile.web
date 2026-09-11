@@ -1,0 +1,22 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json tsconfig.base.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/web/package.json ./apps/web/
+
+RUN npm install
+
+COPY packages/shared ./packages/shared
+COPY apps/web ./apps/web
+
+RUN npm run build --workspace=@campus-mesh/shared
+RUN npm run build --workspace=@campus-mesh/web
+
+FROM caddy:2-alpine AS runner
+
+COPY infrastructure/docker/Caddyfile /etc/caddy/Caddyfile
+COPY --from=builder /app/apps/web/dist /usr/share/caddy
+
+EXPOSE 80 443

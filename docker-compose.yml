@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.server
+    container_name: campus-mesh-server
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+      - STORAGE_DIR=/app/storage/uploads
+      - DATABASE_PATH=/app/storage/campus_mesh.db
+      - JWT_SECRET=hackathon_production_secure_jwt_secret_token_32_chars
+    volumes:
+      - mesh-storage:/app/storage
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: campus-mesh-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./apps/web/dist:/usr/share/caddy:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - server
+
+volumes:
+  mesh-storage:
+  caddy-data:
+  caddy-config:

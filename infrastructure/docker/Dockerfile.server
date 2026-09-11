@@ -1,0 +1,38 @@
+# Build Stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy root workspace configurations
+COPY package.json tsconfig.base.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/server/package.json ./apps/server/
+
+# Install dependencies
+RUN npm install
+
+# Copy source files
+COPY packages/shared ./packages/shared
+COPY apps/server ./apps/server
+
+# Build packages
+RUN npm run build --workspace=@campus-mesh/shared
+RUN npm run build --workspace=@campus-mesh/server
+
+# Production Runtime Stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package.json ./
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/apps/server/package.json ./apps/server/
+COPY --from=builder /app/apps/server/dist ./apps/server/dist
+
+RUN npm install --omit=dev
+
+EXPOSE 3001
+
+CMD ["node", "apps/server/dist/index.js"]
