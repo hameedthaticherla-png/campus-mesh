@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: campus-mesh-server
+    runtime: docker
+    dockerfilePath: infrastructure/docker/Dockerfile.server
+    dockerContext: .
+    region: oregon
+    plan: starter
+    healthCheckPath: /health
+    disk:
+      name: mesh-storage
+      mountPath: /app/storage
+      sizeGB: 10
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATABASE_PATH
+        value: /app/storage/campus_mesh.db
+      - key: STORAGE_DIR
+        value: /app/storage/uploads
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_TTL_HOURS
+        value: "3"
+      - key: MAX_RESOURCE_SIZE_MB
+        value: "5120"
